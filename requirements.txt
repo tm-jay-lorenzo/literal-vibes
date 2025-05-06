@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+openai-whisper
+ollama
+pydantic
+pydub
+jinja2
+sounddevice

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vibe Coding Recorder</title>
+</head>
+<body>
+  <h2>🎤 Vibe Coding Recorder</h2>
+
+  <button id="start">Start Recording</button>
+  <button id="stop">Stop & Upload</button>
+  <button id="judge">Send to Judge</button>
+
+  <p id="status"></p>
+  <pre id="judge-response" style="background:#eee; padding:10px; white-space:pre-wrap;"></pre>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    document.getElementById("start").onclick = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(audioChunks, { type: 'audio/wav' });
+        const formData = new FormData();
+        formData.append('file', blob, 'vibe_input.wav');
+
+        document.getElementById("status").textContent = "Uploading...";
+
+        await fetch('/upload', { method: 'POST', body: formData });
+        document.getElementById("status").textContent = "Uploaded and ready!";
+      };
+
+      mediaRecorder.start();
+      document.getElementById("status").textContent = "Recording...";
+    };
+
+    document.getElementById("stop").onclick = () => {
+      mediaRecorder.stop();
+      document.getElementById("status").textContent = "Stopped recording.";
+    };
+
+    document.getElementById("judge").onclick = async () => {
+      document.getElementById("status").textContent = "Judging...";
+      const res = await fetch('/vibe', { method: 'POST' });
+      const data = await res.json();
+      document.getElementById("judge-response").textContent =
+        data.approved ? `✅ Approved:\n${data.transcription}` : `❌ Rejected:\n${data.transcription}`;
+      document.getElementById("status").textContent = "Done.";
+    };
+  </script>
+</body>
+</html>
