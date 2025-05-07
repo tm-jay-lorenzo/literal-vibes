@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +28,18 @@ async def upload_audio(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
     return {"message": "File uploaded"}
 
+def generate_code(prompt: str) -> str:
+    code_prompt = f"""
+    Create code based on these musical instructions:
+    {prompt}
+    
+    Respond only with the code implementation, no explanations.
+    """
+    code_response = ollama.chat(model="llama3", messages=[
+        {"role": "user", "content": code_prompt}
+    ])
+    return code_response['message']['content']
+
 @app.post("/vibe")
 def handle_vibe():
     result = model.transcribe(UPLOAD_PATH)
@@ -55,16 +66,17 @@ def handle_vibe():
     Input: "{prompt}"
     """
 
-
     response = ollama.chat(model="llama3", messages=[
         {"role": "user", "content": judge_prompt}
     ])
 
     approved = "APPROVED" in response['message']['content'].upper()
+    generated_code = generate_code(prompt) if approved else None
 
     return {
         "approved": approved,
-        "transcription": prompt
+        "transcription": prompt,
+        "generated_code": generated_code
     }
 
 # Global flag
@@ -72,7 +84,9 @@ stop_loop = False
 
 def loop_beat():
     global stop_loop
-    beat = AudioSegment.from_file("beats/lofi.flac", format="flac")
+    filename = "beats/mockingbird.mp3"
+    beat_format = filename.split('.')[-1]
+    beat = AudioSegment.from_file(filename, format=beat_format)
     play(beat)
     print("Attempting to stop beat")
     playback.stop(beat)
