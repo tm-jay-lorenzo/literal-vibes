@@ -7,10 +7,15 @@ router = APIRouter()
 @router.post("/vibe")
 def handle_vibe():
     prompt = transcribe_audio(UPLOAD_PATH)
-    approved = judge_prompt(prompt)
+    response = judge_prompt(prompt)
+    print("responsex",response)
+    approved = "APPROVED" in response['message']['content'].upper()
     generated_code = generate_code(prompt) if approved else None
     return {
         "approved": approved,
+        "llm-output": response['message']['content'],
         "transcription": prompt,
         "generated_code": generated_code
     }
+
+

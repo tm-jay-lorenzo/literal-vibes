@@ -25,19 +25,17 @@
       background: #4c4c4c;
     }
     #judge-response {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #transcription-output, #llm-output, #generated-code {
       background: #2d2d2d;
       padding: 15px;
       border: 1px solid #555;
       border-radius: 4px;
       white-space: pre-wrap;
-    }
-    #generated-code {
-      background: #1e1e1e;
-      padding: 15px;
-      border: 1px solid #555;
-      border-radius: 4px;
-      white-space: pre-wrap;
       font-family: 'Consolas', monospace;
+      margin-top: 10px;
     }
     #status {
       color: #569cd6;
@@ -53,18 +51,24 @@
   <h2>🎤 Vibe Coding Recorder</h2>
 
   <button id="start">Start Recording</button>
-  <button id="stop">Stop & Upload</button>
-  <button id="judge">Send to Judge</button>
+  <button id="stop">Stop</button>
+  <button id="judge">Judge My Tunes</button>
 
   <p id="status"></p>
-  <pre id="judge-response"></pre>
+  <pre id="transcription-output"></pre>
+  <h1 id="judge-response"></h1>
+  <pre id="llm-output"></pre>
   <pre id="generated-code"></pre>
 
   <script>
     let mediaRecorder;
     let audioChunks = [];
 
-    document.getElementById("start").onclick = async () => {
+/*************  ✨ Windsurf Command ⭐  *************/
+    /**
+     * Handle the "Start Recording" button click.
+     *
+/*******  9da03c2f-fbde-4c80-aac5-a0ac92437246  *******/    document.getElementById("start").onclick = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
@@ -75,10 +79,10 @@
         const formData = new FormData();
         formData.append('file', blob, 'vibe_input.wav');
 
-        document.getElementById("status").textContent = "Uploading...";
+        document.getElementById("status").textContent = "Taking it in...";
 
         await fetch('/upload', { method: 'POST', body: formData });
-        document.getElementById("status").textContent = "Uploaded and ready!";
+        document.getElementById("status").textContent = "Loaded and ready to go!";
       };
 
       mediaRecorder.start();
@@ -91,27 +95,27 @@
     };
 
     document.getElementById("judge").onclick = async () => {
-      document.getElementById("status").textContent = "Transcribing...";
+      document.getElementById("status").textContent = "Feeling the beat...";
       
       const res = await fetch('/vibe', { method: 'POST' });
       const data = await res.json();
 
       document.getElementById("status").textContent = "Judging...";
 
-      // Simulate brief delay to show judgment status clearly (optional)
       await new Promise(r => setTimeout(r, 500));
 
+      document.getElementById("transcription-output").textContent = `🎧 Your lyrics:\n${data.transcription || "(No transcription returned)"}`;
+
       document.getElementById("judge-response").textContent =
-        data.approved ? `✅ Approved:\n${data.transcription}` : `❌ Rejected:\n${data.transcription}`;
-      if (data.approved && data.generated_code) {
-        document.getElementById("generated-code").textContent = data.generated_code;
-      } else {
-        document.getElementById("generated-code").textContent = "";
-      }
+        data.approved ? `😎 Passed the Vibe Check` : `🤮 The Vibes are not IT`;
+
+      document.getElementById("llm-output").textContent = data["llm-output"] || "(No detailed output received)";
+
+      document.getElementById("generated-code").textContent =
+        data.approved && data.generated_code ? data.generated_code : "";
 
       document.getElementById("status").textContent = "Done.";
     };
-
   </script>
 </body>
 </html>

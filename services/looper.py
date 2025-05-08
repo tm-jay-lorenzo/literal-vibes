@@ -9,4 +9,4 @@ def loop_beat():
     beat_format = filename.split('.')[-1]
     beat = AudioSegment.from_file(filename, format=beat_format)
     play(beat)
-    playback.stop(beat)
+    # playback.stop(beat)
