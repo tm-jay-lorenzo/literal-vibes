@@ -1,0 +1,1 @@
+UPLOAD_PATH: str = "vibe_input.wav"

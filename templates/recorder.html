@@ -91,9 +91,16 @@
     };
 
     document.getElementById("judge").onclick = async () => {
-      document.getElementById("status").textContent = "Judging...";
+      document.getElementById("status").textContent = "Transcribing...";
+      
       const res = await fetch('/vibe', { method: 'POST' });
       const data = await res.json();
+
+      document.getElementById("status").textContent = "Judging...";
+
+      // Simulate brief delay to show judgment status clearly (optional)
+      await new Promise(r => setTimeout(r, 500));
+
       document.getElementById("judge-response").textContent =
         data.approved ? `✅ Approved:\n${data.transcription}` : `❌ Rejected:\n${data.transcription}`;
       if (data.approved && data.generated_code) {
@@ -101,8 +108,10 @@
       } else {
         document.getElementById("generated-code").textContent = "";
       }
+
       document.getElementById("status").textContent = "Done.";
     };
+
   </script>
 </body>
 </html>
