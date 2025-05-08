@@ -60,15 +60,15 @@
   <pre id="llm-output"></pre>
   <pre id="generated-code"></pre>
 
+  <!-- Sound Effects -->
+  <audio id="sfx-success" src="/static/sfx/success.mp3"></audio>
+  <audio id="sfx-fail" src="/static/sfx/fail.mp3"></audio>  
+
   <script>
     let mediaRecorder;
     let audioChunks = [];
 
-/*************  ✨ Windsurf Command ⭐  *************/
-    /**
-     * Handle the "Start Recording" button click.
-     *
-/*******  9da03c2f-fbde-4c80-aac5-a0ac92437246  *******/    document.getElementById("start").onclick = async () => {
+    document.getElementById("start").onclick = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
@@ -82,7 +82,7 @@
         document.getElementById("status").textContent = "Taking it in...";
 
         await fetch('/upload', { method: 'POST', body: formData });
-        document.getElementById("status").textContent = "Loaded and ready to go!";
+        document.getElementById("status").textContent = "Ready to judge!";
       };
 
       mediaRecorder.start();
@@ -96,7 +96,7 @@
 
     document.getElementById("judge").onclick = async () => {
       document.getElementById("status").textContent = "Feeling the beat...";
-      
+
       const res = await fetch('/vibe', { method: 'POST' });
       const data = await res.json();
 
@@ -104,13 +104,18 @@
 
       await new Promise(r => setTimeout(r, 500));
 
-      document.getElementById("transcription-output").textContent = `🎧 Your lyrics:\n${data.transcription || "(No transcription returned)"}`;
+      document.getElementById("transcription-output").textContent =
+        `🎧 Your lyrics:\n${data.transcription || "(No transcription returned)"}`;
 
-      document.getElementById("judge-response").textContent =
-        data.approved ? `😎 Passed the Vibe Check` : `🤮 The Vibes are not IT`;
+      if (data.approved) {
+        document.getElementById("judge-response").textContent = `😎 Passed the Vibe Check`;
+        document.getElementById("sfx-success").play();
+      } else {
+        document.getElementById("judge-response").textContent = `🤮 The Vibes are not IT`;
+        document.getElementById("sfx-fail").play();
+      }
 
       document.getElementById("llm-output").textContent = data["llm-output"] || "(No detailed output received)";
-
       document.getElementById("generated-code").textContent =
         data.approved && data.generated_code ? data.generated_code : "";
 

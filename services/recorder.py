@@ -12,7 +12,7 @@ def judge_prompt(prompt: str) -> bool:
     - 🌀 Presence of rhyme or lyrical flow
     - ⚡ Originality and delivery energy
 
-    After scoring each, compute the average score.
+    After scoring each, compute the average score. 
 
     Respond *only* with:
 
@@ -21,9 +21,9 @@ def judge_prompt(prompt: str) -> bool:
     Lyrical Flow: <score>/100  
     Delivery: <score>/100  
 
-    Total Score: <average of the scores>/100  
+    Total Score: <average of the scores>  
     APPROVED – if the total score is **80 or higher**, or if the word "Testing" appears in the prompt.  
-    REJECTED – if the total score is **below 80**, and "Testing" is not mentioned.
+    REJECTED – if the total score is **below 80**, check the total score carefully.
 
     Input: "{prompt}"
 
