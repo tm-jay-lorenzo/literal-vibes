@@ -1,6 +1,6 @@
 # 🎤 Vibe Coding Agent
 
-A fun and creative way to code — using your voice as a rap or song. This project lets you record sung or rapped input, judge its musicality and relevance to coding, and only pass it to a coding agent (like Cursor or Copilot) if it's approved.
+A fun and creative way to code — using your voice as a rap or song. This project lets you record sung or rapped input, judge its musicality and relevance to coding, and only answer your queries if it's approved.
 
 ---
 
