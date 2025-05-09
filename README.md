@@ -80,20 +80,6 @@ The LLM will approve only if the input:
 
 ---
 
-## 🧩 Cursor Integration (Optional)
-If you want to integrate this with [Cursor](https://cursor.so) or VS Code:
-- Build an extension that polls `POST /vibe`
-- On approval, insert the transcription into the editor
-
-Example:
-```ts
-editor.edit(editBuilder => {
-  editBuilder.insert(editor.selection.active, approvedText);
-});
-```
-
----
-
 ## 🤝 Credits
 - Whisper by OpenAI
 - Ollama for local LLM inference
